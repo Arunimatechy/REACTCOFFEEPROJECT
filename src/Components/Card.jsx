@@ -20,7 +20,7 @@ const Card = ({ product }) => {
   const [open, setOpen] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
-  const { deleteProduct, updateProduct, reduceStock } = useContext(ProductContext);
+  const { deleteProduct, updateProduct } = useContext(ProductContext);
   const { addtoCart, removeFromCart, Cart } = useContext(CartContext);
   const { user } = useContext(UserContext);
   const { darkMode } = useContext(ThemeContext);
@@ -33,7 +33,8 @@ const Card = ({ product }) => {
     setQty(item?.quantity || 0);
   }, [Cart, product.id]);
 
-  const handleInput = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleInput = (e) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleUpdate = () => {
     updateProduct(product.id, form);
@@ -46,12 +47,8 @@ const Card = ({ product }) => {
       navigate("/login");
       return;
     }
-    if (product.stock === 0) {
-      toast.error("Out of Stock");
-      return;
-    }
+
     addtoCart(product);
-    reduceStock(product.id);
     setQty((prev) => prev + 1);
     toast.success("Added to cart!");
   };
@@ -70,18 +67,20 @@ const Card = ({ product }) => {
         text: product.description,
         url: window.location.href,
       });
-    } else toast.error("Sharing not supported");
+    } else {
+      toast.error("Sharing not supported");
+    }
   };
 
   return (
     <>
       <div
         className={`rounded-2xl p-4 border shadow-lg transition-all duration-300
-          ${
-            darkMode
-              ? "bg-gray-800 text-gray-100 border-gray-700 hover:shadow-2xl"
-              : "bg-white text-gray-900 border-gray-200 hover:shadow-2xl"
-          }`}
+        ${
+          darkMode
+            ? "bg-gray-800 text-gray-100 border-gray-700 hover:shadow-2xl"
+            : "bg-white text-gray-900 border-gray-200 hover:shadow-2xl"
+        }`}
       >
         <div className="relative overflow-hidden rounded-xl">
           {!imgLoaded && <ImageSkeleton />}
@@ -98,7 +97,7 @@ const Card = ({ product }) => {
           <button
             onClick={handleShare}
             className={`absolute top-3 left-3 p-2 rounded-full shadow hover:scale-110 transition
-              ${darkMode ? "bg-gray-700/80 text-gray-100" : "bg-white text-gray-800"}`}
+            ${darkMode ? "bg-gray-700/80 text-gray-100" : "bg-white text-gray-800"}`}
           >
             <FaShareAlt />
           </button>
@@ -107,22 +106,42 @@ const Card = ({ product }) => {
             <button
               onClick={() => toggleWishlist(product)}
               className={`absolute top-3 right-3 p-2 rounded-full shadow hover:scale-110 transition
-                ${darkMode ? "bg-gray-700/80 text-gray-100" : "bg-white text-gray-800"}`}
+              ${darkMode ? "bg-gray-700/80 text-gray-100" : "bg-white text-gray-800"}`}
             >
-              {isWishlisted(product.id) ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+              {isWishlisted(product.id) ? (
+                <FaHeart className="text-red-500" />
+              ) : (
+                <FaRegHeart />
+              )}
             </button>
           )}
         </div>
 
         {isEditing ? (
           <div className="flex flex-col gap-2 mt-3">
-            <input name="title" value={form.title} onChange={handleInput} className="border p-2 rounded" placeholder="Title" />
-            <input name="price" value={form.price} onChange={handleInput} className="border p-2 rounded" placeholder="Price" />
+            <input
+              name="title"
+              value={form.title}
+              onChange={handleInput}
+              className="border p-2 rounded"
+              placeholder="Title"
+            />
+            <input
+              name="price"
+              value={form.price}
+              onChange={handleInput}
+              className="border p-2 rounded"
+              placeholder="Price"
+            />
             <select
               name="category"
               value={form.category}
               onChange={handleInput}
-              className={`border p-2 rounded ${darkMode ? "bg-gray-700 text-gray-100 border-gray-600" : "bg-white text-gray-900 border-gray-300"}`}
+              className={`border p-2 rounded ${
+                darkMode
+                  ? "bg-gray-700 text-gray-100 border-gray-600"
+                  : "bg-white text-gray-900 border-gray-300"
+              }`}
             >
               <option value="">Select Category</option>
               <option value="COFFEE">COFFEE</option>
@@ -132,26 +151,53 @@ const Card = ({ product }) => {
               <option value="CROISSANTS">CROISSANTS</option>
               <option value="COOKIES">COOKIES</option>
             </select>
-            <input name="image" value={form.image} onChange={handleInput} className="border p-2 rounded" placeholder="Image URL" />
-            <textarea name="description" value={form.description} onChange={handleInput} className="border p-2 rounded" placeholder="Description" />
+            <input
+              name="image"
+              value={form.image}
+              onChange={handleInput}
+              className="border p-2 rounded"
+              placeholder="Image URL"
+            />
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleInput}
+              className="border p-2 rounded"
+              placeholder="Description"
+            />
             <div className="flex gap-2">
-              <button onClick={handleUpdate} className="bg-green-600 text-white py-2 rounded w-full hover:bg-green-700 transition">
+              <button
+                onClick={handleUpdate}
+                className="bg-green-600 text-white py-2 rounded w-full hover:bg-green-700 transition"
+              >
                 Save
               </button>
-              <button onClick={() => setIsEditing(false)} className="bg-gray-500 text-white py-2 rounded w-full hover:bg-gray-600 transition">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="bg-gray-500 text-white py-2 rounded w-full hover:bg-gray-600 transition"
+              >
                 Cancel
               </button>
             </div>
           </div>
         ) : (
           <>
-            <h2 className="text-lg font-bold mt-3 text-center">{product.title}</h2>
-            <p className="text-green-500 font-semibold text-center">₹ {product.price}</p>
-            <p className="text-sm text-center opacity-80">{product.category}</p>
+            <h2 className="text-lg font-bold mt-3 text-center">
+              {product.title}
+            </h2>
+            <p className="text-green-500 font-semibold text-center">
+              ₹ {product.price}
+            </p>
+            <p className="text-sm text-center opacity-80">
+              {product.category}
+            </p>
 
-            {user?.isAdmin && <p className="text-sm mt-2 text-center opacity-90">{product.description}</p>}
+            {user?.isAdmin && (
+              <p className="text-sm mt-2 text-center opacity-90">
+                {product.description}
+              </p>
+            )}
 
-           
             {!user?.isAdmin && (
               <div className="flex justify-center mt-3">
                 {qty === 0 ? (
@@ -183,9 +229,17 @@ const Card = ({ product }) => {
 
             {user?.isAdmin && (
               <div className="flex gap-2 mt-3">
-                <button onClick={() => setIsEditing(true)} className="bg-blue-600 text-white py-2 rounded w-full hover:bg-blue-700 transition">Edit</button>
                 <button
-                  onClick={() => window.confirm("Delete product?") && deleteProduct(product.id)}
+                  onClick={() => setIsEditing(true)}
+                  className="bg-blue-600 text-white py-2 rounded w-full hover:bg-blue-700 transition"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() =>
+                    window.confirm("Delete product?") &&
+                    deleteProduct(product.id)
+                  }
                   className="bg-red-600 text-white py-2 rounded w-full hover:bg-red-700 transition"
                 >
                   Delete
@@ -193,16 +247,23 @@ const Card = ({ product }) => {
               </div>
             )}
 
-            {!user?.isAdmin && (
-              <button onClick={() => setOpen(true)} className="w-full mt-2 border border-dashed py-2 rounded-lg hover:border-amber-400 transition">
+           
+              <button
+                onClick={() => setOpen(true)}
+                className="w-full mt-2 border border-dashed py-2 rounded-lg hover:border-amber-400 transition"
+              >
                 👀 Quick View
               </button>
-            )}
+           
           </>
         )}
       </div>
 
-      <QuickViewModal product={product} open={open} onClose={() => setOpen(false)} />
+      <QuickViewModal
+        product={product}
+        open={open}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 };

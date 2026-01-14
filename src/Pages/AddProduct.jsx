@@ -11,13 +11,12 @@ const AddProduct = () => {
   const { darkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ 
-    title: "", 
-    price: "", 
-    image: "", 
-    description: "", 
-    category: "", 
-    stock: "", 
+  const [form, setForm] = useState({
+    title: "",
+    price: "",
+    image: "",
+    description: "",
+    category: "",
   });
 
   const handleInput = (e) =>
@@ -26,13 +25,12 @@ const AddProduct = () => {
   const submitProduct = (e) => {
     e.preventDefault();
 
-    if (!form.title || !form.price || !form.image || !form.description || !form.stock) {
+    if (!form.title || !form.price || !form.image || !form.description || !form.category) {
       return toast.error("Fill all fields");
     }
 
     addProduct({
       ...form,
-      stock: Number(form.stock),
     });
 
     toast.success("Product added!");
@@ -42,8 +40,8 @@ const AddProduct = () => {
       image: "",
       description: "",
       category: "",
-      stock: "",
     });
+
     navigate("/products");
   };
 
@@ -63,7 +61,11 @@ const AddProduct = () => {
       <form
         onSubmit={submitProduct}
         className={`w-full max-w-lg p-6 rounded-2xl shadow-2xl flex flex-col gap-4
-          ${darkMode ? "bg-gray-800 text-gray-100 border border-gray-700" : "bg-white text-gray-900 border border-gray-200"}`}
+        ${
+          darkMode
+            ? "bg-gray-800 text-gray-100 border border-gray-700"
+            : "bg-white text-gray-900 border border-gray-200"
+        }`}
       >
         <h1 className="text-2xl font-bold text-center mb-4">Add Product</h1>
 
@@ -74,7 +76,11 @@ const AddProduct = () => {
           placeholder="Title"
           onChange={handleInput}
           className={`border p-3 rounded-lg outline-none transition
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"}`}
+          ${
+            darkMode
+              ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400"
+              : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"
+          }`}
         />
 
         <input
@@ -84,17 +90,11 @@ const AddProduct = () => {
           placeholder="Price"
           onChange={handleInput}
           className={`border p-3 rounded-lg outline-none transition
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"}`}
-        />
-
-        <input
-          name="stock"
-          type="number"
-          value={form.stock}
-          placeholder="Stock Quantity"
-          onChange={handleInput}
-          className={`border p-3 rounded-lg outline-none transition
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"}`}
+          ${
+            darkMode
+              ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400"
+              : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"
+          }`}
         />
 
         <input
@@ -104,7 +104,11 @@ const AddProduct = () => {
           placeholder="Image URL"
           onChange={handleInput}
           className={`border p-3 rounded-lg outline-none transition
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"}`}
+          ${
+            darkMode
+              ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400"
+              : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"
+          }`}
         />
 
         <select
@@ -112,7 +116,11 @@ const AddProduct = () => {
           value={form.category}
           onChange={handleInput}
           className={`border p-3 rounded-lg outline-none transition
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"}`}
+          ${
+            darkMode
+              ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400"
+              : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"
+          }`}
         >
           <option value="">Select Category</option>
           <option value="COFFEE">COFFEE</option>
@@ -129,13 +137,21 @@ const AddProduct = () => {
           placeholder="Description"
           onChange={handleInput}
           className={`border p-3 rounded-lg outline-none transition
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400" : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"}`}
+          ${
+            darkMode
+              ? "bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-amber-400"
+              : "bg-white border-gray-300 text-gray-900 focus:ring-2 focus:ring-blue-500"
+          }`}
         />
 
         <button
           type="submit"
           className={`py-3 rounded-lg font-semibold transition
-            ${darkMode ? "bg-amber-500 hover:bg-amber-400 text-gray-900" : "bg-blue-600 hover:bg-blue-700 text-white"}`}
+          ${
+            darkMode
+              ? "bg-amber-500 hover:bg-amber-400 text-gray-900"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
         >
           Add Product
         </button>
