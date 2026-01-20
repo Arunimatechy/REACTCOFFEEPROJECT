@@ -42,7 +42,7 @@ const AddProduct = () => {
       category: "",
     });
 
-    navigate("/products");
+    navigate("/");
   };
 
   if (!user?.isAdmin)

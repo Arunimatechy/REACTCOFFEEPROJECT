@@ -1,12 +1,14 @@
-import { createContext, useEffect, useState,useContext } from "react";
+import { createContext, useEffect, useState, useContext } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { CartContext } from "./CartContext";
+
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const navigate = useNavigate();
-const { clearCart } = useContext(CartContext); 
+  const { clearCart } = useContext(CartContext);
+
   const [users, setUsers] = useState(
     JSON.parse(localStorage.getItem("users")) || []
   );
@@ -25,16 +27,25 @@ const { clearCart } = useContext(CartContext);
 
   const logout = () => {
     setUser(null);
-     clearCart(); 
+    clearCart();
     navigate("/");
     toast.success("Logged out");
   };
 
+  // ✅ FIXED REGISTER (NO DUPLICATE EMAIL)
   const registerUsers = (data) => {
+    const emailExists = users.some((u) => u.email === data.email);
+
+    if (emailExists) {
+      toast.error("Email already registered");
+      return;
+    }
+
     setUsers((prev) => [
       ...prev,
       { id: Date.now(), ...data, isAdmin: false },
     ]);
+
     toast.success("Successfully registered");
     navigate("/login");
   };
@@ -61,3 +72,4 @@ const { clearCart } = useContext(CartContext);
     </UserContext.Provider>
   );
 };
+
