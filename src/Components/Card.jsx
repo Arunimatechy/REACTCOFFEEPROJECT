@@ -1,124 +1,162 @@
 
-
-
 import React, { useContext, useEffect, useState } from "react";
-import { ProductContext } from "../Context/ProductContext.jsx";
-import { CartContext } from "../Context/CartContext.jsx";
-import { UserContext } from "../Context/UserContext.jsx";
-import { ThemeContext } from "../Context/ThemeContext.jsx";
-import { WishlistContext } from "../Context/WishlistContext.jsx";
+import { ProductContext } from "../Context/ProductContext";
+import { CartContext } from "../Context/CartContext";
+import { UserContext } from "../Context/UserContext";
+import { ThemeContext } from "../Context/ThemeContext";
 import { useNavigate } from "react-router-dom";
-import QuickViewModal from "./QuickViewModal";
-import ImageSkeleton from "./ImageSkeleton";
-import { FaHeart, FaRegHeart, FaShareAlt } from "react-icons/fa";
+
 import toast from "react-hot-toast";
+import ImageSkeleton from "../Components/ImageSkeleton";
+import StarRating from "../Components/StarRating";
 
 const Card = ({ product }) => {
   const [qty, setQty] = useState(0);
-  const [isEditing, setIsEditing] = useState(false);
-  const [form, setForm] = useState({ ...product });
-  const [open, setOpen] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [size, setSize] = useState("M");
+
+  const [form, setForm] = useState({
+    ...product,
+    price: Number(product.price) || 0,
+    rating: Number(product.rating) || 0,
+  });
 
   const { deleteProduct, updateProduct } = useContext(ProductContext);
-  const { addtoCart, removeFromCart, Cart } = useContext(CartContext);
+  const { addToCart, removeFromCart, cart } = useContext(CartContext);
   const { user } = useContext(UserContext);
   const { darkMode } = useContext(ThemeContext);
-  const { toggleWishlist, isWishlisted } = useContext(WishlistContext);
-
   const navigate = useNavigate();
 
   useEffect(() => {
-    const item = Cart.find((x) => x.id === product.id);
+    const item = cart.find((i) => i.id === product.id);
     setQty(item?.quantity || 0);
-  }, [Cart, product.id]);
+  }, [cart, product.id]);
 
-  const handleInput = (e) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-
-  const handleUpdate = () => {
-    updateProduct(product.id, form);
-    setIsEditing(false);
-  };
-
-  const handleAddToCart = () => {
+  const handleAdd = () => {
     if (!user) {
-      toast.error("Please login");
+      toast.error("Please login to order ☕");
       navigate("/login");
       return;
     }
-
-    addtoCart(product);
-    setQty((prev) => prev + 1);
-    toast.success("Added to cart!");
+    addToCart({ ...product, size });
   };
 
-  const handleRemoveFromCart = () => {
-    if (qty > 0) {
-      removeFromCart(product);
-      setQty((prev) => prev - 1);
-    }
+  const handleInput = (e) => {
+    const { name, value } = e.target;
+    setForm((p) => ({
+      ...p,
+      [name]: name === "price" || name === "rating" ? Number(value) : value,
+    }));
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: product.title,
-        text: product.description,
-        url: window.location.href,
-      });
-    } else {
-      toast.error("Sharing not supported");
-    }
+  const handleUpdate = () => {
+    updateProduct(form);
+    setIsEditing(false);
+    toast.success("Product updated");
   };
 
   return (
-    <>
-      <div
-        className={`rounded-2xl p-4 border shadow-lg transition-all duration-300
-        ${
-          darkMode
-            ? "bg-gray-800 text-gray-100 border-gray-700 hover:shadow-2xl"
-            : "bg-white text-gray-900 border-gray-200 hover:shadow-2xl"
-        }`}
-      >
-        <div className="relative overflow-hidden rounded-xl">
-          {!imgLoaded && <ImageSkeleton />}
-          <img
-            src={product.image}
-            alt={product.title}
-            onLoad={() => setImgLoaded(true)}
-            onClick={() => setOpen(true)}
-            className={`w-full h-52 object-cover cursor-pointer transition-transform duration-500 hover:scale-105 rounded-xl ${
-              imgLoaded ? "block" : "hidden"
-            }`}
-          />
+    <div
+      className={`group rounded-3xl overflow-hidden border transition-transform duration-300
+      hover:shadow-2xl hover:scale-105 cursor-pointer
+      ${
+        darkMode
+          ? "bg-gradient-to-br from-gray-800 via-gray-900 to-black border-gray-700 text-[#f5ede6]"
+          : "bg-gradient-to-br from-[#fffaf6] via-[#f3e7d6] to-[#f1e2d6] border-[#e7d6c9] text-[#2b1e16]"
+      }`}
+    >
+      {/* IMAGE */}
+      <div className="relative h-56 overflow-hidden">
+        {!imgLoaded && <ImageSkeleton />}
+        <img
+          src={product.image}
+          alt={product.title}
+          onLoad={() => setImgLoaded(true)}
+          className={`w-full h-full object-cover transition duration-500 ${
+            imgLoaded ? "opacity-100 scale-100" : "opacity-0 scale-105"
+          }`}
+        />
 
-          <button
-            onClick={handleShare}
-            className={`absolute top-3 left-3 p-2 rounded-full shadow hover:scale-110 transition
-            ${darkMode ? "bg-gray-700/80 text-gray-100" : "bg-white text-gray-800"}`}
-          >
-            <FaShareAlt />
-          </button>
+     
+        <span className="absolute top-3 left-3 bg-black/60 text-white text-xs px-3 py-1 rounded-full">
+          ⏱️ 5–7 mins
+        </span>
+      </div>
 
-          {!user?.isAdmin && (
-            <button
-              onClick={() => toggleWishlist(product)}
-              className={`absolute top-3 right-3 p-2 rounded-full shadow hover:scale-110 transition
-              ${darkMode ? "bg-gray-700/80 text-gray-100" : "bg-white text-gray-800"}`}
-            >
-              {isWishlisted(product.id) ? (
-                <FaHeart className="text-red-500" />
-              ) : (
-                <FaRegHeart />
-              )}
-            </button>
-          )}
-        </div>
+      
+      <div className="p-5 space-y-3">
+        {!isEditing ? (
+          <>
+            
+            <h2 className="text-xl font-bold text-center">{product.title}</h2>
 
-        {isEditing ? (
-          <div className="flex flex-col gap-2 mt-3">
+            
+            <div className="flex justify-center">
+              <StarRating rating={product.rating || 4.5} size={16} />
+            </div>
+
+            
+            <p className="text-sm text-center text-[#6b4b3a]">
+              {product.description}
+            </p>
+
+            
+            <div className="flex justify-center gap-2 pt-2">
+              {["S", "M", "L"].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSize(s)}
+                  className={`px-4 py-1 rounded-full text-sm font-semibold
+                    ${
+                      size === s
+                        ? "bg-[#c08552] text-white"
+                        : "bg-[#f1e2d6] text-[#6b4b3a]"
+                    }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            
+            <p className="text-2xl font-extrabold text-center text-[#c08552]">
+              ₹ {product.price}
+            </p>
+
+            
+            {!user?.isAdmin && (
+              <div className="pt-3 flex justify-center">
+                {qty === 0 ? (
+                  <button
+                    onClick={handleAdd}
+                    className="bg-gradient-to-r from-[#c08552] to-[#a66a3c] text-white px-6 py-2 rounded-xl font-semibold shadow"
+                  >
+                    Add to Order ☕
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-4 bg-black/20 px-4 py-2 rounded-xl">
+                    <button
+                      onClick={() => removeFromCart(product)}
+                      className="px-3 py-1 bg-[#6b4b3a] text-white rounded"
+                    >
+                      −
+                    </button>
+                    <span className="font-bold">{qty}</span>
+                    <button
+                      onClick={handleAdd}
+                      className="px-3 py-1 bg-[#c08552] text-white rounded"
+                    >
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        ) : (
+          
+          <div className="flex flex-col gap-3">
             <input
               name="title"
               value={form.title}
@@ -126,37 +164,27 @@ const Card = ({ product }) => {
               className="border p-2 rounded"
               placeholder="Title"
             />
+            <select
+              name="category"
+              value={form.category || ""}
+              onChange={handleInput}
+              className="border p-2 rounded"
+            >
+              <option value="">Select Category</option>
+              <option value="COFFEE">☕ Coffee</option>
+              <option value="FRENCH_TOAST">🍞 French Toast</option>
+              <option value="SANDWICH">🥪 Sandwich</option>
+              <option value="FRAPPE">🧋 Frappe</option>
+              <option value="CROISSANTS">🥐 Croissants</option>
+              <option value="COOKIES">🍪 Cookies</option>
+            </select>
             <input
               name="price"
+              type="number"
               value={form.price}
               onChange={handleInput}
               className="border p-2 rounded"
               placeholder="Price"
-            />
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleInput}
-              className={`border p-2 rounded ${
-                darkMode
-                  ? "bg-gray-700 text-gray-100 border-gray-600"
-                  : "bg-white text-gray-900 border-gray-300"
-              }`}
-            >
-              <option value="">Select Category</option>
-              <option value="COFFEE">COFFEE</option>
-              <option value="FRENCH TOAST">FRENCH TOAST</option>
-              <option value="SANDWICH">SANDWICH</option>
-              <option value="FRAPPE">FRAPPE</option>
-              <option value="CROISSANTS">CROISSANTS</option>
-              <option value="COOKIES">COOKIES</option>
-            </select>
-            <input
-              name="image"
-              value={form.image}
-              onChange={handleInput}
-              className="border p-2 rounded"
-              placeholder="Image URL"
             />
             <textarea
               name="description"
@@ -165,106 +193,58 @@ const Card = ({ product }) => {
               className="border p-2 rounded"
               placeholder="Description"
             />
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <label className="font-medium">Rating:</label>
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="0.5"
+                name="rating"
+                value={form.rating || 0}
+                onChange={handleInput}
+                className="flex-1"
+              />
+              <span>{form.rating}</span>
+            </div>
+            <div className="flex justify-between gap-2 pt-2">
               <button
                 onClick={handleUpdate}
-                className="bg-green-600 text-white py-2 rounded w-full hover:bg-green-700 transition"
+                className="flex-1 bg-green-600 text-white py-2 rounded-lg"
               >
                 Save
               </button>
               <button
                 onClick={() => setIsEditing(false)}
-                className="bg-gray-500 text-white py-2 rounded w-full hover:bg-gray-600 transition"
+                className="flex-1 bg-gray-400 py-2 rounded-lg"
               >
                 Cancel
               </button>
             </div>
           </div>
-        ) : (
-          <>
-            <h2 className="text-lg font-bold mt-3 text-center">
-              {product.title}
-            </h2>
-            <p className="text-green-500 font-semibold text-center">
-              ₹ {product.price}
-            </p>
-            <p className="text-sm text-center opacity-80">
-              {product.category}
-            </p>
+        )}
 
-            {user?.isAdmin && (
-              <p className="text-sm mt-2 text-center opacity-90">
-                {product.description}
-              </p>
-            )}
-
-            {!user?.isAdmin && (
-              <div className="flex justify-center mt-3">
-                {qty === 0 ? (
-                  <button
-                    onClick={handleAddToCart}
-                    className="w-full bg-amber-400 py-2 rounded hover:bg-amber-500 transition"
-                  >
-                    Add to Cart
-                  </button>
-                ) : (
-                  <div className="flex justify-center gap-4">
-                    <button
-                      onClick={handleRemoveFromCart}
-                      className="bg-gray-300 px-3 py-1 rounded hover:bg-gray-400 transition"
-                    >
-                      -
-                    </button>
-                    <span className="px-2 py-1">{qty}</span>
-                    <button
-                      onClick={handleAddToCart}
-                      className="bg-amber-400 px-3 py-1 rounded hover:bg-amber-500 transition"
-                    >
-                      +
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {user?.isAdmin && (
-              <div className="flex gap-2 mt-3">
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="bg-blue-600 text-white py-2 rounded w-full hover:bg-blue-700 transition"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() =>
-                    window.confirm("Delete product?") &&
-                    deleteProduct(product.id)
-                  }
-                  className="bg-red-600 text-white py-2 rounded w-full hover:bg-red-700 transition"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-
-           
-              <button
-                onClick={() => setOpen(true)}
-                className="w-full mt-2 border border-dashed py-2 rounded-lg hover:border-amber-400 transition"
-              >
-                👀 Quick View
-              </button>
-           
-          </>
+        
+        {!isEditing && user?.isAdmin && (
+          <div className="flex gap-2 pt-3">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex-1 bg-blue-600 text-white py-2 rounded-lg"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() =>
+                window.confirm("Delete product?") && deleteProduct(product.id)
+              }
+              className="flex-1 bg-red-600 text-white py-2 rounded-lg"
+            >
+              Delete
+            </button>
+          </div>
         )}
       </div>
-
-      <QuickViewModal
-        product={product}
-        open={open}
-        onClose={() => setOpen(false)}
-      />
-    </>
+    </div>
   );
 };
 

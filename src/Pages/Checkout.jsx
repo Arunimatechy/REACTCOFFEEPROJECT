@@ -1,3 +1,5 @@
+
+
 import React, { useContext, useState } from "react";
 import { CartContext } from "../Context/CartContext";
 import { OrderContext } from "../Context/OrderContext";
@@ -7,13 +9,15 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Checkout = () => {
-  const { Cart, clearCart } = useContext(CartContext);
-  const { addOrder } = useContext(OrderContext);
+  const { cart = [], clearCart } = useContext(CartContext); 
   const { user } = useContext(UserContext);
   const { darkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
 
-  const total = Cart.reduce((a, b) => a + b.price * b.quantity, 0);
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   const [form, setForm] = useState({
     name: "",
@@ -26,31 +30,26 @@ const Checkout = () => {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const placeOrder = (e) => {
     e.preventDefault();
 
-    if (!form.name || !form.address || !form.city || !form.state || !form.pincode || !form.phonenumber || !form.payment) {
-      toast.error("Please fill all fields");
-      return;
-    }
-    if (!user) {
-      toast.error("Please login to place an order");
-      return;
-    }
-    if (Cart.length === 0) {
-      toast.error("Cart is empty");
-      return;
+    if (!user) return toast.error("Please login first");
+    if (cart.length === 0) return toast.error("Your cart is empty");
+
+    for (let key in form) {
+      if (!form[key]) {
+        return toast.error("Please fill all fields");
+      }
     }
 
     const order = {
       id: Date.now(),
       userId: user.id,
       username: user.username,
-      items: Cart,
+      items: cart,
       total,
       payment: form.payment,
       status: "Pending",
@@ -63,16 +62,24 @@ const Checkout = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors
-      ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
-      
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 transition-colors ${
+        darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+      }`}
+    >
       <form
         onSubmit={placeOrder}
-        className={`w-full max-w-xl p-6 md:p-8 rounded-xl shadow-md border transition-colors
-          ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
+        className={`w-full max-w-xl p-8 md:p-10 rounded-3xl shadow-2xl border backdrop-blur-md transition-colors ${
+          darkMode
+            ? "bg-gray-800/90 border-gray-700"
+            : "bg-white/90 border-gray-200"
+        }`}
       >
-        <h2 className={`text-2xl font-bold mb-6 text-center
-          ${darkMode ? "text-amber-400" : "text-cyan-950"}`}>
+        <h2
+          className={`text-3xl font-bold mb-6 text-center ${
+            darkMode ? "text-amber-400" : "text-cyan-950"
+          }`}
+        >
           Delivery Address
         </h2>
 
@@ -82,9 +89,7 @@ const Checkout = () => {
           placeholder="Full Name"
           value={form.name}
           onChange={handleChange}
-          className={`w-full mb-4 p-3 rounded-md outline-none border
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:border-amber-400"
-                       : "border-gray-300 focus:border-cyan-700"}`}
+          className="w-full mb-4 p-3 rounded-xl border outline-none"
         />
 
         <textarea
@@ -93,20 +98,17 @@ const Checkout = () => {
           value={form.address}
           onChange={handleChange}
           rows="3"
-          className={`w-full mb-4 p-3 rounded-md outline-none resize-none border
-            ${darkMode ? "bg-gray-700 border-gray-600 text-white focus:border-amber-400"
-                       : "border-gray-300 focus:border-cyan-700"}`}
+          className="w-full mb-4 p-3 rounded-xl border outline-none resize-none"
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <input
             type="text"
             name="city"
             placeholder="City"
             value={form.city}
             onChange={handleChange}
-            className={`p-3 rounded-md outline-none border
-              ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"}`}
+            className="p-3 rounded-xl border outline-none"
           />
           <input
             type="text"
@@ -114,72 +116,62 @@ const Checkout = () => {
             placeholder="State"
             value={form.state}
             onChange={handleChange}
-            className={`p-3 rounded-md outline-none border
-              ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"}`}
+            className="p-3 rounded-xl border outline-none"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          
           <input
-            type="number"
+            type="text"
             name="phonenumber"
             placeholder="Phone Number"
             value={form.phonenumber}
             onChange={handleChange}
-            className={`p-3 rounded-md outline-none border
-              ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"}`}
+            className="p-3 rounded-xl border outline-none"
           />
           <input
-            type="number"
+            type="text"
             name="pincode"
             placeholder="Pincode"
             value={form.pincode}
             onChange={handleChange}
-            className={`p-3 rounded-md outline-none border
-              ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "border-gray-300"}`}
+            className="p-3 rounded-xl border outline-none"
           />
         </div>
 
         <div className="mt-6 border-t pt-4">
-          <h3 className={`font-semibold mb-3 ${darkMode ? "text-amber-400" : "text-cyan-950"}`}>
-            Payment Method
-          </h3>
+          <h3 className="font-semibold mb-3">Payment Method</h3>
 
-          <label className="flex items-center gap-2 mb-2 cursor-pointer">
-            <input
-              type="radio"
-              name="payment"
-              value="COD"
-              checked={form.payment === "COD"}
-              onChange={handleChange}
-              className="accent-amber-500"
-            />
-            <span>Cash on Delivery</span>
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="payment"
-              value="UPI"
-              checked={form.payment === "UPI"}
-              onChange={handleChange}
-              className="accent-amber-500"
-            />
-            <span>UPI / Online Payment</span>
-          </label>
+          {["COD", "UPI"].map((method) => (
+            <label
+              key={method}
+              className="flex items-center gap-3 mb-3 p-3 border rounded-xl cursor-pointer"
+            >
+              <input
+                type="radio"
+                name="payment"
+                value={method}
+                checked={form.payment === method}
+                onChange={handleChange}
+              />
+              <span>
+                {method === "COD"
+                  ? "Cash on Delivery"
+                  : "UPI / Online Payment"}
+              </span>
+            </label>
+          ))}
         </div>
 
-        <div className="mt-6 flex justify-between items-center text-lg font-bold">
-          <span>Total Amount</span>
+        <div className="mt-6 flex justify-between text-lg font-bold">
+          <span>Total</span>
           <span className="text-amber-500">₹{total}</span>
         </div>
 
         <button
           type="submit"
-          className={`mt-6 w-full p-3 rounded-lg font-semibold transition
-            ${darkMode ? "bg-amber-500 hover:bg-amber-400 text-gray-900"
-                       : "bg-cyan-950 hover:bg-cyan-900 text-amber-50"}`}
+          className="mt-6 w-full p-3 rounded-xl bg-amber-500 hover:bg-amber-400 font-semibold text-gray-900"
         >
           PLACE ORDER
         </button>
@@ -189,5 +181,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-
-

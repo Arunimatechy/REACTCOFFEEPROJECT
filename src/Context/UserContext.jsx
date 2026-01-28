@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState, useContext } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { CartContext } from "./CartContext";
 
 export const UserContext = createContext();
@@ -9,11 +9,11 @@ export const UserProvider = ({ children }) => {
   const navigate = useNavigate();
   const { clearCart } = useContext(CartContext);
 
-  const [users, setUsers] = useState(
+  const [users, setUsers] = useState(() =>
     JSON.parse(localStorage.getItem("users")) || []
   );
 
-  const [user, setUser] = useState(
+  const [user, setUser] = useState(() =>
     JSON.parse(localStorage.getItem("user")) || null
   );
 
@@ -22,8 +22,41 @@ export const UserProvider = ({ children }) => {
   }, [users]);
 
   useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(user));
+    if (user) localStorage.setItem("user", JSON.stringify(user));
+    else localStorage.removeItem("user");
   }, [user]);
+
+  const registerUsers = (data) => {
+    const emailExists = users.some(u => u.email === data.email);
+
+    if (emailExists) {
+      return { success: false, message: "Email already exists" };
+    }
+
+    setUsers(prev => [
+      ...prev,
+      {
+        ...data,
+        id: Date.now(),
+        isAdmin: false,
+      }
+    ]);
+
+    toast.success("Registered successfully");
+    return { success: true };
+  };
+
+  // LOGIN
+  const loginUser = (data) => {
+    const found = users.find(u => u.email === data.email);
+    if (!found) return toast.error("User not found");
+    if (found.password !== data.password)
+      return toast.error("Wrong password");
+
+    setUser(found);
+    toast.success("Login success");
+    navigate("/");
+  };
 
   const logout = () => {
     setUser(null);
@@ -32,44 +65,11 @@ export const UserProvider = ({ children }) => {
     toast.success("Logged out");
   };
 
-  // ✅ FIXED REGISTER (NO DUPLICATE EMAIL)
-  const registerUsers = (data) => {
-    const emailExists = users.some((u) => u.email === data.email);
-
-    if (emailExists) {
-      toast.error("Email already registered");
-      return;
-    }
-
-    setUsers((prev) => [
-      ...prev,
-      { id: Date.now(), ...data, isAdmin: false },
-    ]);
-
-    toast.success("Successfully registered");
-    navigate("/login");
-  };
-
-  const loginUser = (data) => {
-    const exist = users.find((x) => x.email === data.email);
-
-    if (!exist) return toast.error("User does not exist");
-
-    if (exist.password === data.password) {
-      setUser(exist);
-      toast.success("Logged in successfully");
-      navigate("/");
-    } else {
-      toast.error("Invalid credentials");
-    }
-  };
-
   return (
     <UserContext.Provider
-      value={{ registerUsers, loginUser, user, logout, users }}
+      value={{ user, users, registerUsers, loginUser, logout }}
     >
       {children}
     </UserContext.Provider>
   );
 };
-

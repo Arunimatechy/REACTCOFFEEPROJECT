@@ -15,7 +15,9 @@ import CartPage from "./Pages/CartPage";
 import Checkout from "./Pages/Checkout";
 import OrderSuccess from "./Pages/OrderSuccess";
 import Orders from "./Pages/Orders";
-import Wishlist from "./Pages/Wishlist";
+
+
+
 import { Toaster } from "react-hot-toast";
 
 const App = () => {
@@ -28,17 +30,12 @@ const App = () => {
       <Routes>
        
         <Route path="/" element={<ListPage />} />
+       
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        <Route
-          path="/wishlist"
-          element={
-            <ProtectedRoute>
-              <Wishlist />
-            </ProtectedRoute>
-          }
-        />
+        
 
         
         <Route

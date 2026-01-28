@@ -1,30 +1,22 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 
 export const OrderContext = createContext();
 
-
 export const OrderProvider = ({ children }) => {
-  const [orders, setOrders] = useState(
-    JSON.parse(localStorage.getItem("orders")) || []
-  );
-
-  useEffect(() => {
-    localStorage.setItem("orders", JSON.stringify(orders));
-  }, [orders]);
+  const [orders, setOrders] = useState([]);
 
   const addOrder = (order) => {
-    setOrders([...orders, order]);
+    setOrders(prev => [...prev, order]);
   };
 
   const deleteOrder = (id) => {
-    setOrders(orders.filter((order) => order.id !== id));
+    setOrders(prev => prev.filter(o => o.id !== id));
   };
 
-  
   const updateOrderStatus = (id, status) => {
-    setOrders(
-      orders.map((order) =>
-        order.id === id ? { ...order, status } : order
+    setOrders(prev =>
+      prev.map(o =>
+        o.id === id ? { ...o, status } : o
       )
     );
   };

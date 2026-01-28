@@ -1,93 +1,108 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../Context/ThemeContext";
 import { OrderContext } from "../Context/OrderContext";
-import { Link } from "react-router-dom";
+import { UserContext } from "../Context/UserContext";
+import { Link, Navigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const { darkMode } = useContext(ThemeContext);
   const { orders } = useContext(OrderContext);
+  const { user } = useContext(UserContext);
 
+  if (!user || !user.isAdmin) {
+    return <Navigate to="/" />;
+  }
+
+ 
   const totalOrders = orders.length;
   const pending = orders.filter((o) => o.status === "Pending").length;
   const delivered = orders.filter((o) => o.status === "Delivered").length;
   const revenue = orders.reduce((sum, o) => sum + o.total, 0);
 
+  const stats = [
+    {
+      label: "Total Orders",
+      value: totalOrders,
+      bg: darkMode ? "bg-blue-700" : "bg-blue-600",
+      text: "text-white",
+    },
+    {
+      label: "Pending",
+      value: pending,
+      bg: darkMode ? "bg-yellow-600" : "bg-yellow-400",
+      text: "text-gray-900",
+    },
+    {
+      label: "Delivered",
+      value: delivered,
+      bg: darkMode ? "bg-green-700" : "bg-green-600",
+      text: "text-white",
+    },
+    {
+      label: "Revenue",
+      value: `₹${revenue}`,
+      bg: darkMode ? "bg-indigo-700" : "bg-indigo-600",
+      text: "text-white",
+    },
+  ];
+
+  const buttonStyles =
+    "px-5 py-3 rounded-2xl font-semibold shadow-lg transition-transform transform hover:-translate-y-1 hover:scale-105";
+
   return (
     <div
-      className={`min-h-screen p-8 transition-colors
-        ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"}`}
+      className={`min-h-screen p-8 transition-colors ${
+        darkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
+      }`}
     >
-      <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+      <h1
+        className={`text-4xl font-extrabold mb-8 tracking-tight text-center md:text-left ${
+          darkMode ? "text-amber-400" : "text-cyan-950"
+        }`}
+      >
+        Admin Dashboard
+      </h1>
 
       
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-       
-        <div
-          className={`p-5 rounded font-semibold
-            ${darkMode ? "bg-blue-700 text-white" : "bg-blue-500 text-white"}`}
-        >
-          Total Orders
-          <br />
-          {totalOrders}
-        </div>
-
-        <div
-          className={`p-5 rounded font-semibold
-            ${darkMode ? "bg-yellow-600 text-black" : "bg-yellow-300 text-gray-900"}`}
-        >
-          Pending
-          <br />
-          {pending}
-        </div>
-
-       
-        <div
-          className={`p-5 rounded font-semibold
-            ${darkMode ? "bg-green-700 text-white" : "bg-green-500 text-white"}`}
-        >
-          Delivered
-          <br />
-          {delivered}
-        </div>
-
-       
-        <div
-          className={`p-5 rounded font-semibold
-            ${darkMode ? "bg-indigo-700 text-white" : "bg-indigo-500 text-white"}`}
-        >
-          Revenue
-          <br />₹{revenue}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+        {stats.map((stat, idx) => (
+          <div
+            key={idx}
+            className={`p-6 rounded-2xl ${stat.bg} ${stat.text} shadow-xl flex flex-col justify-center items-center transition-all transform hover:-translate-y-2 hover:shadow-2xl`}
+          >
+            <p className="text-sm opacity-80">{stat.label}</p>
+            <h2 className="text-3xl font-bold mt-2">{stat.value}</h2>
+          </div>
+        ))}
       </div>
 
-     
-      <div className="flex gap-4 flex-wrap">
+      
+      <div className="flex flex-wrap gap-4 justify-center md:justify-start">
         <Link
           to="/admin/add"
-          className={`px-4 py-2 rounded font-semibold shadow transition
-            ${darkMode
-              ? "bg-cyan-700 text-white hover:bg-cyan-600"
-              : "bg-cyan-600 text-white hover:bg-cyan-500"}`}
+          className={`${buttonStyles} ${
+            darkMode ? "bg-amber-500 hover:bg-amber-400 text-gray-900" : "bg-amber-600 hover:bg-amber-500 text-white"
+          }`}
         >
           ➕ Add Product
         </Link>
 
         <Link
           to="/"
-          className={`px-4 py-2 rounded font-semibold shadow transition
-            ${darkMode
-              ? "bg-gray-700 text-white hover:bg-gray-600"
-              : "bg-white text-indigo-700 hover:bg-gray-100 border"}`}
+          className={`${buttonStyles} ${
+            darkMode
+              ? "bg-gray-700 hover:bg-gray-600 text-white border border-gray-600"
+              : "bg-white text-indigo-700 border border-indigo-500 hover:bg-indigo-50"
+          }`}
         >
           📦 View Products
         </Link>
 
         <Link
           to="/admin/orders"
-          className={`px-4 py-2 rounded font-semibold shadow transition
-            ${darkMode
-              ? "bg-gray-700 text-white hover:bg-gray-600"
-              : "bg-gray-600 text-white hover:bg-gray-500"}`}
+          className={`${buttonStyles} ${
+            darkMode ? "bg-gray-800 hover:bg-gray-700 text-white" : "bg-gray-600 hover:bg-gray-700 text-white"
+          }`}
         >
           🛒 View Orders
         </Link>
@@ -97,5 +112,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
-
