@@ -1,4 +1,6 @@
-import { createContext, useEffect, useState, useContext } from "react";
+
+
+import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CartContext } from "./CartContext";
@@ -9,11 +11,11 @@ export const UserProvider = ({ children }) => {
   const navigate = useNavigate();
   const { clearCart } = useContext(CartContext);
 
-  const [users, setUsers] = useState(() =>
+  const [users, setUsers] = useState(
     JSON.parse(localStorage.getItem("users")) || []
   );
 
-  const [user, setUser] = useState(() =>
+  const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
 
@@ -26,22 +28,12 @@ export const UserProvider = ({ children }) => {
     else localStorage.removeItem("user");
   }, [user]);
 
+  // REGISTER
   const registerUsers = (data) => {
     const emailExists = users.some(u => u.email === data.email);
+    if (emailExists) return { success: false, message: "Email already exists" };
 
-    if (emailExists) {
-      return { success: false, message: "Email already exists" };
-    }
-
-    setUsers(prev => [
-      ...prev,
-      {
-        ...data,
-        id: Date.now(),
-        isAdmin: false,
-      }
-    ]);
-
+    setUsers(prev => [...prev, { ...data, id: Date.now(), isAdmin: false }]);
     toast.success("Registered successfully");
     return { success: true };
   };
@@ -50,8 +42,7 @@ export const UserProvider = ({ children }) => {
   const loginUser = (data) => {
     const found = users.find(u => u.email === data.email);
     if (!found) return toast.error("User not found");
-    if (found.password !== data.password)
-      return toast.error("Wrong password");
+    if (found.password !== data.password) return toast.error("Wrong password");
 
     setUser(found);
     toast.success("Login success");
@@ -66,9 +57,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider
-      value={{ user, users, registerUsers, loginUser, logout }}
-    >
+    <UserContext.Provider value={{ user, users, registerUsers, loginUser, logout }}>
       {children}
     </UserContext.Provider>
   );

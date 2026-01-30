@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from "react";
+
+import React, { createContext, useState, useEffect } from "react";
 
 export const CartContext = createContext();
 
@@ -12,33 +13,19 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  
   const addToCart = (product) => {
-    setCart((prev) => {
-      const found = prev.find((p) => p.id === product.id);
-
-      if (found) {
-        return prev.map((p) =>
-          p.id === product.id
-            ? { ...p, quantity: p.quantity + 1 }
-            : p
-        );
-      }
-
+    setCart(prev => {
+      const found = prev.find(p => p.id === product.id);
+      if (found) return prev.map(p => p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p);
       return [...prev, { ...product, quantity: 1 }];
     });
   };
 
-  
   const removeFromCart = (product) => {
-    setCart((prev) =>
+    setCart(prev =>
       prev
-        .map((p) =>
-          p.id === product.id
-            ? { ...p, quantity: p.quantity - 1 }
-            : p
-        )
-        .filter((p) => p.quantity > 0)
+        .map(p => p.id === product.id ? { ...p, quantity: p.quantity - 1 } : p)
+        .filter(p => p.quantity > 0)
     );
   };
 
@@ -47,11 +34,12 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem("cart");
   };
 
- const cartlength = cart.reduce((a, b) => a + b.quantity, 0);
+  const cartlength = cart.reduce((a, b) => a + b.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, cartlength,clearCart,}}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, cartlength }}>
       {children}
     </CartContext.Provider>
   );
 };
+

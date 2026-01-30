@@ -1,4 +1,5 @@
-import { createContext, useEffect, useState } from "react";
+
+import { createContext, useState, useEffect } from "react";
 
 export const ProductContext = createContext();
 
@@ -13,36 +14,21 @@ export const ProductProvider = ({ children }) => {
   }, [products]);
 
   const addProduct = (data) => {
-    setProducts((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        reviews: [],
-        ...data,
-      },
-    ]);
+    setProducts(prev => [...prev, { id: Date.now(), reviews: [], ...data }]);
   };
 
   const deleteProduct = (id) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
+    setProducts(prev => prev.filter(p => p.id !== id));
   };
 
-
   const updateProduct = (updatedProduct) => {
-  setProducts((prev) =>
-    prev.map((p) =>
-      p.id === updatedProduct.id
-        ? { ...p, ...updatedProduct }
-        : p
-    )
-  );
-};
-
+    setProducts(prev =>
+      prev.map(p => p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p)
+    );
+  };
 
   return (
-    <ProductContext.Provider
-      value={{ products, addProduct, deleteProduct, updateProduct }}
-    >
+    <ProductContext.Provider value={{ products, addProduct, deleteProduct, updateProduct }}>
       {children}
     </ProductContext.Provider>
   );

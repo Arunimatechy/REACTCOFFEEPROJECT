@@ -8,7 +8,6 @@ const Orders = () => {
   const { user } = useContext(UserContext);
   const { darkMode } = useContext(ThemeContext);
 
-
   if (!user) {
     return (
       <div
@@ -22,8 +21,9 @@ const Orders = () => {
   }
 
 
-  const userOrders = user?.isAdmin ? orders : orders.filter((o) => o.userId === user.id);
-
+  const userOrders = user?.isAdmin
+    ? orders || []
+    : orders?.filter((o) => o.userId === user?.id) || [];
 
   if (userOrders.length === 0) {
     return (
@@ -49,7 +49,8 @@ const Orders = () => {
         </h1>
 
         {userOrders.map((order) => {
-          const totalItems = order.items?.reduce((sum, item) => sum + item.quantity, 0);
+          
+          const totalItems = order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
           return (
             <div
@@ -58,7 +59,6 @@ const Orders = () => {
                 darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
               }`}
             >
-             
               <div
                 className={`grid grid-cols-2 md:grid-cols-6 gap-4 p-5 text-sm font-semibold ${
                   darkMode ? "bg-gray-700" : "bg-gray-100"
@@ -92,7 +92,6 @@ const Orders = () => {
                 <div>
                   <p className="text-xs opacity-70">STATUS</p>
 
-                 
                   {!user?.isAdmin && (
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-bold inline-block transition ${
@@ -125,7 +124,6 @@ const Orders = () => {
                 </div>
               </div>
 
-            
               {user?.isAdmin && (
                 <div className="flex justify-end px-5 pt-4">
                   <button
@@ -137,7 +135,6 @@ const Orders = () => {
                 </div>
               )}
 
-             
               <div className="divide-y flex flex-col gap-3">
                 {order.items?.map((item, i) => (
                   <div key={i} className="flex justify-between p-5">
@@ -152,7 +149,6 @@ const Orders = () => {
                 ))}
               </div>
 
-             
               <div
                 className={`px-5 py-4 flex justify-between font-semibold ${
                   darkMode ? "bg-gray-700" : "bg-gray-100"

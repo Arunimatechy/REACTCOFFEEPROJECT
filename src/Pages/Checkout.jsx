@@ -1,15 +1,14 @@
-
-
 import React, { useContext, useState } from "react";
 import { CartContext } from "../Context/CartContext";
-import { OrderContext } from "../Context/OrderContext";
+import { OrderContext } from "../Context/OrderContext"; 
 import { UserContext } from "../Context/UserContext";
 import { ThemeContext } from "../Context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const Checkout = () => {
-  const { cart = [], clearCart } = useContext(CartContext); 
+  const { cart = [], clearCart } = useContext(CartContext);
+  const { addOrder } = useContext(OrderContext); 
   const { user } = useContext(UserContext);
   const { darkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -56,7 +55,7 @@ const Checkout = () => {
       date: new Date().toISOString(),
     };
 
-    addOrder(order);
+    addOrder(order); 
     clearCart();
     navigate("/success");
   };
@@ -121,7 +120,6 @@ const Checkout = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
-          
           <input
             type="text"
             name="phonenumber"

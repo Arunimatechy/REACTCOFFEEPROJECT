@@ -1,3 +1,4 @@
+
 import React, { useContext, useState } from "react";
 import { ProductContext } from "../Context/ProductContext.jsx";
 import { UserContext } from "../Context/UserContext.jsx";
@@ -34,11 +35,9 @@ const AddProduct = () => {
 
   const submitProduct = (e) => {
     e.preventDefault();
-
     if (!form.title || !form.shortDesc || !form.price || !form.image || !form.category) {
       return toast.error("Fill all required fields");
     }
-
     addProduct(form);
     toast.success("Café item added ☕");
     navigate("/");
@@ -60,79 +59,112 @@ const AddProduct = () => {
     >
       <form
         onSubmit={submitProduct}
-        className={`w-full max-w-xl p-8 rounded-3xl shadow-2xl space-y-5 transition-all ${
+        className={`w-full max-w-sm p-6 rounded-3xl shadow-2xl space-y-4 transition-all ${
           darkMode ? "bg-gray-800 text-white border border-gray-700" : "bg-white text-gray-900 border border-gray-200"
         }`}
       >
-        <h1 className="text-3xl font-extrabold text-center">
-          Add Café Menu Item ☕
-        </h1>
+      
+        {form.image && (
+          <div className="w-full h-48 rounded-2xl overflow-hidden mb-4">
+            <img
+              src={form.image}
+              alt={form.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+
+     
+        <div className="flex flex-col items-center text-center">
+          <h2 className="text-xl font-bold">{form.title || "Product Name"}</h2>
+          <StarRating rating={form.rating} />
+          <p className="text-sm text-gray-400 mt-1">{form.prepTime}</p>
+        </div>
 
         <input
           name="title"
-          placeholder="Item name (Latte, Cappuccino)"
+          placeholder="Item Name (Latte, Cappuccino)"
           value={form.title}
           onChange={handleInput}
-          className={`input-field ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"}`}
+          className={`w-full p-3 rounded-xl border transition ${
+            darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"
+          }`}
         />
 
         <input
           name="shortDesc"
-          placeholder="Short description (1–2 lines)"
+          placeholder="Short description"
           value={form.shortDesc}
           onChange={handleInput}
-          className={`input-field ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"}`}
+          className={`w-full p-3 rounded-xl border transition ${
+            darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"
+          }`}
         />
 
         <textarea
           name="description"
-          placeholder="Full description (optional)"
-          rows={3}
+          placeholder="Full description"
           value={form.description}
           onChange={handleInput}
-          className={`input-field resize-none ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"}`}
+          rows={2}
+          className={`w-full p-3 rounded-xl border resize-none transition ${
+            darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"
+          }`}
         />
 
-        <input
-          name="price"
-          type="number"
-          placeholder="Base price (₹)"
-          value={form.price}
-          onChange={handleInput}
-          className={`input-field ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"}`}
-        />
+        <div className="flex gap-2">
+          <input
+            name="price"
+            type="number"
+            placeholder="Price (₹)"
+            value={form.price}
+            onChange={handleInput}
+            className={`flex-1 p-3 rounded-xl border transition ${
+              darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"
+            }`}
+          />
+
+          <input
+            name="prepTime"
+            placeholder="Prep Time"
+            value={form.prepTime}
+            onChange={handleInput}
+            className={`w-32 p-3 rounded-xl border transition ${
+              darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"
+            }`}
+          />
+        </div>
 
         <input
           name="image"
           placeholder="Image URL"
           value={form.image}
           onChange={handleInput}
-          className={`input-field ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"}`}
+          className={`w-full p-3 rounded-xl border transition ${
+            darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"
+          }`}
         />
 
         <select
           name="category"
           value={form.category}
           onChange={handleInput}
-          className={`input-field ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"}`}
+          className={`w-full p-3 rounded-xl border transition ${
+            darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"
+          }`}
         >
           <option value="">Select Category</option>
           <option value="COFFEE">COFFEE</option>
           <option value="FRAPPE">FRAPPE</option>
           <option value="BAKERY">BAKERY</option>
           <option value="SANDWICH">SANDWICH</option>
+          <option value="COOKIES">COOKIES</option>
+          <option value="FRENCH TOAST">FRENCH TOAST</option>
         </select>
 
-        <input
-          name="prepTime"
-          placeholder="Prep time (e.g., 5–7 mins)"
-          value={form.prepTime}
-          onChange={handleInput}
-          className={`input-field ${darkMode ? "bg-gray-700 border-gray-600 text-white" : "bg-gray-100 border-gray-300 text-gray-900"}`}
-        />
-
-        <div>
-          <label className="font-semibold mb-1 block">Rating: {form.rating}</label>
+    
+        <div className="flex flex-col gap-1">
+          <label className="font-semibold">Rating: {form.rating}</label>
           <input
             type="range"
             min="0"
@@ -142,17 +174,16 @@ const AddProduct = () => {
             onChange={(e) => setForm((p) => ({ ...p, rating: Number(e.target.value) }))}
             className="w-full accent-amber-500"
           />
-          <div className="mt-1">
-            <StarRating rating={form.rating} />
-          </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full py-3 rounded-xl bg-amber-600 text-white font-bold hover:bg-amber-500 transition-all shadow-lg"
-        >
-          Add to Menu
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            className="flex-1 py-3 rounded-xl bg-amber-600 text-white font-bold hover:bg-amber-500 transition-all shadow-lg"
+          >
+            Add to Menu
+          </button>
+        </div>
       </form>
     </div>
   );

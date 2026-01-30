@@ -1,19 +1,21 @@
+
 import React, { useContext } from "react";
 import { ThemeContext } from "../Context/ThemeContext";
 import { OrderContext } from "../Context/OrderContext";
 import { UserContext } from "../Context/UserContext";
 import { Link, Navigate } from "react-router-dom";
 
+
 const AdminDashboard = () => {
   const { darkMode } = useContext(ThemeContext);
   const { orders } = useContext(OrderContext);
   const { user } = useContext(UserContext);
 
+  
   if (!user || !user.isAdmin) {
     return <Navigate to="/" />;
   }
 
- 
   const totalOrders = orders.length;
   const pending = orders.filter((o) => o.status === "Pending").length;
   const delivered = orders.filter((o) => o.status === "Delivered").length;
@@ -62,8 +64,6 @@ const AdminDashboard = () => {
       >
         Admin Dashboard
       </h1>
-
-      
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
         {stats.map((stat, idx) => (
           <div
@@ -76,12 +76,15 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      
+   
       <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+       
         <Link
           to="/admin/add"
           className={`${buttonStyles} ${
-            darkMode ? "bg-amber-500 hover:bg-amber-400 text-gray-900" : "bg-amber-600 hover:bg-amber-500 text-white"
+            darkMode
+              ? "bg-amber-500 hover:bg-amber-400 text-gray-900"
+              : "bg-amber-600 hover:bg-amber-500 text-white"
           }`}
         >
           ➕ Add Product
@@ -101,7 +104,9 @@ const AdminDashboard = () => {
         <Link
           to="/admin/orders"
           className={`${buttonStyles} ${
-            darkMode ? "bg-gray-800 hover:bg-gray-700 text-white" : "bg-gray-600 hover:bg-gray-700 text-white"
+            darkMode
+              ? "bg-gray-800 hover:bg-gray-700 text-white"
+              : "bg-gray-600 hover:bg-gray-700 text-white"
           }`}
         >
           🛒 View Orders
