@@ -41,7 +41,14 @@ export const ProductContext = createContext();
 export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState(() => {
     const stored = localStorage.getItem("products");
-    return stored ? JSON.parse(stored) : defaultProducts; // Use default products if nothing in localStorage
+    const parsed = stored ? JSON.parse(stored) : null;
+
+    // IMPORTANT FIX 👇
+    if (parsed && parsed.length > 0) {
+      return parsed;
+    }
+
+    return defaultProducts;
   });
 
   useEffect(() => {
@@ -58,12 +65,16 @@ export const ProductProvider = ({ children }) => {
 
   const updateProduct = (updatedProduct) => {
     setProducts((prev) =>
-      prev.map((p) => (p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p))
+      prev.map((p) =>
+        p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
+      )
     );
   };
 
   return (
-    <ProductContext.Provider value={{ products, addProduct, deleteProduct, updateProduct }}>
+    <ProductContext.Provider
+      value={{ products, addProduct, deleteProduct, updateProduct }}
+    >
       {children}
     </ProductContext.Provider>
   );
