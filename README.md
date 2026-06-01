@@ -32,4 +32,4 @@ A responsive e-commerce web application built with React.js, featuring dynamic p
 https://reactcoffeeproject.vercel.app/
 
 ## 📂 GitHub Repository
-https://github.com/Arunimatechy/fakestoreapiredux
+https://github.com/Arunimatechy/REACTCOFFEEPROJECT
