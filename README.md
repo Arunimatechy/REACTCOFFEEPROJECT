@@ -9,7 +9,7 @@ A modern and responsive coffee shop web application built with **React.js**, des
 Add your deployed URL here
 
 ```text
-https://reactcoffeeproject.vercel.app
+https://reactcoffeeproject.vercel.app/
 ```
 
 ---
