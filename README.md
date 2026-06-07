@@ -197,30 +197,43 @@ This project helped me gain practical experience in:
 - Deployment using Vercel
 
 ---
-
 ## 📸 Screenshots
 
-### Home Page
+### 🏠 Home Page
 
-_Add Screenshot Here_
+![Home Page](screenshot/home-page.png)
 
-### Coffee Collection
-
-_Add Screenshot Here_
-
-### Product Details
-
-_Add Screenshot Here_
-
-### Shopping Cart
-
-_Add Screenshot Here_
-
-### Mobile View
-
-_Add Screenshot Here_
+Modern landing page showcasing featured coffee products and categories.
 
 ---
+
+### ☕ Coffee Collection
+
+![Coffee Collection](screenshot/coffee-collection.png)
+
+Browse a variety of coffee products with category-based filtering and responsive product cards.
+
+---
+
+
+
+### 🛒 Shopping Cart
+
+![Shopping Cart](screenshot/shopping-cart.png)
+
+Manage selected products, update quantities, and view cart totals.
+
+---
+
+### 📱 Mobile View
+
+![Mobile View](screenshot/mobile-view.png)
+
+Fully responsive design optimized for mobile and tablet devices.
+
+---
+
+
 
 ## 🚀 Future Improvements
 
